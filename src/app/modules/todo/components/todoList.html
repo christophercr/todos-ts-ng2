@@ -1,0 +1,45 @@
+<section id="main" *ngIf="todos.length">
+	<input id="toggle-all" title="Toggle All" type="checkbox" name="toggleAll" [(ngModel)]="allChecked"
+		   (change)="markAll(allChecked)">
+	<label for="toggle-all">Mark all as complete</label>
+	<ul id="todo-list">
+		<li *ngFor="let todo of filteredTodos; let idx = index;"
+			[ngClass]="{completed: todo.completed, editing: todo == editedTodo}">
+			<div class="view">
+				<input class="toggle" title="Toggle" type="checkbox" name="{{'toggle'+idx}}" [(ngModel)]="todo.completed"
+					   (change)="toggleCompleted(todo)">
+				<label (dblclick)="editTodo(todo)">{{todo.title}}</label>
+				<button class="destroy" (click)="removeTodo(todo)"></button>
+			</div>
+			<form (ngSubmit)="saveEdits(todo, 'submit')">
+				<input class="edit" name="editTodo" [(ngModel)]="todo.title" [todoEscape]="todo" (onEscape)="revertEdits($event)"
+					   (blur)="saveEdits(todo, 'blur')" [todoFocus]="todo === editedTodo">
+			</form>
+		</li>
+	</ul>
+</section>
+<footer id="footer" *ngIf="todos.length">
+					<span id="todo-count"><strong>{{remainingCount}}</strong>
+						<!-- FIXME: there is an issue with ngPluralCase + ng-container: https://github.com/angular/angular/issues/12363 -->
+						<!--<span [ngPlural]="remainingCount">-->
+						  <!--<ng-container *ngPluralCase="'=1'">item left</ng-container>-->
+						  <!--<ng-container *ngPluralCase="'other'">items left</ng-container>-->
+						<!--</span>-->
+						<span>item(s) left</span>
+					</span>
+	<ul id="filters">
+		<li>
+			<a [ngClass]="{selected: status == ''} " (click)="showAll()" href="#">All</a>
+		</li>
+		<li>
+			<a [ngClass]="{selected: status == 'active'}" (click)="showAll('active')"
+			   href="#">Active</a>
+		</li>
+		<li>
+			<a [ngClass]="{selected: status == 'completed'}" (click)="showAll('completed')" href="#">Completed</a>
+		</li>
+	</ul>
+	<button id="clear-completed" (click)="clearCompletedTodos()" *ngIf="completedCount">Clear
+		completed
+	</button>
+</footer>
